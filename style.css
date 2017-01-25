@@ -1,0 +1,6 @@
+.no-gutter > [class^="col-"],
+.no-gutters > [class*=" col-"]
+{
+	padding-left: 0px;
+	padding-right: 0px;
+}
