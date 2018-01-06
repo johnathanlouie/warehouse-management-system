@@ -48,6 +48,9 @@ class Mysql {
         if (!$stmt) {
             throw new MysqlPreparationException($this->mysqli->connect_error, $this->mysqli->errno);
         }
+        if (!is_array($params)) {
+            $params = [$params];
+        }
         foreach ($params as $value) {
             $bind = $stmt->bind_param($types, ...$value);
             if (!$bind) {
