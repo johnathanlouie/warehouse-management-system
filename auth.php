@@ -1,8 +1,8 @@
 <?php
 
-require_once 'mysql.php';
-
 namespace wms;
+
+require_once 'mysql.php';
 
 class Name {
 
@@ -135,8 +135,11 @@ class Auth {
         return true;
     }
 
-    private function verifyAuthKey($authKey) {
-        return isset($_SESSION['key']) && ($authKey === $_SESSION['key']);
+    public function isLoggedIn() {
+        if (isset($_COOKIE['key']) && isset($_SESSION['key'])) {
+            return $_COOKIE['key'] === $_SESSION['key'];
+        }
+        return false;
     }
 
     private function getUser($username) {

@@ -1,8 +1,8 @@
 <?php
 
-require_once 'config.php';
-
 namespace wms;
+
+require_once 'config.php';
 
 class MysqlConnectionException extends \Exception {
     
