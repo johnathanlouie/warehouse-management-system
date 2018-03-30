@@ -1,31 +1,22 @@
 <?php
-require 'session.php';
-require 'template_top.html';
-include 'navbar.php';
-?>
 
-<div class="container">
-<h1>Logout</h1>
+namespace wms;
 
-<?php
-if ($authenticated):
-	logout();
-?>
-<div class="alert alert-success">
-<p>You have successfully logged out.</p>
-</div>
+require_once 'loginstatus.php';
 
-<?php else: ?>
-<div class="alert alert-info">
-<p>You were already logged out!</p>
-</div>
+class LogoutHandler {
 
-<?php endif; ?>
+    private static function respond() {
+        if (!Session::getInstance()->isLoggedIn()) {
+            return new LoginStatus('Not logged in.', LoginStatus::SUCCESS);
+        }
+        return new LoginStatus('Successfully logged out.', LoginStatus::SUCCESS);
+    }
 
-<a href="index.php" class="btn btn-info btn-block" role="button">Home</a>
-<a href="login.php" class="btn btn-info btn-block" role="button">Login</a>
-</div>
+    public static function handle() {
+        echo json_encode(self::respond());
+    }
 
-<?php
-require 'template_bot.html';
-?>
+}
+
+LogoutHandler::handle();

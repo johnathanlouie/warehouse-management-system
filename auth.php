@@ -40,7 +40,7 @@ class Name {
 
 }
 
-class User {
+class Auth {
 
     private $name;
     private $username;
@@ -66,12 +66,12 @@ class User {
         return $this->username;
     }
 
-    public function getPassword() {
-        return $this->password;
-    }
-
     public function getRole() {
         return $this->role;
+    }
+
+    public function getPassword() {
+        return $this->password;
     }
 
     public function setName($name) {
@@ -92,32 +92,48 @@ class User {
 
 }
 
-class Auth {
+class AuthDao {
 
     const TABLE = 'users';
+    const USERID = 'id';
     const USERNAME = 'username';
     const PASSWORD = 'password';
     const FIRSTNAME = 'name_first';
     const LASTNAME = 'name_last';
     const ROLE = 'role';
 
-    private static $instance;
-
-    private function __construct() {
-        session_start();
-    }
-
-    public static function getInstance() {
-        if ($this->instance === null) {
-            $this->instance = new Auth();
+    public static function getUser($username) {
+        $db = new Mysql();
+        $DB_TABLE = self::TABLE;
+        $DB_USER = self::USERNAME;
+        $DB_PW = self::PASSWORD;
+        $DB_FN = self::FIRSTNAME;
+        $DB_LN = self::LASTNAME;
+        $DB_ROLE = self::ROLE;
+        $sql = "SELECT $DB_USER, $DB_PW, $DB_ROLE, $DB_FN, $DB_LN FROM $DB_TABLE WHERE $DB_USER  = ?";
+        $results = $db->preparedQuery($sql, 's', $username);
+        $db->close();
+        if (!isset($results[0])) {
+            return null;
         }
-        return $this->instance;
+        $name = new Name($results[self::FIRSTNAME], $results[self::LASTNAME]);
+        $user = new Auth($name, $results[self::USERNAME], $results[self::PASSWORD], $results[self::ROLE]);
+        return $user;
     }
+    
+    public static function setup(){}
+    
+    public static function createUser(){}
+    
+    public static function updateUser(){}
 
-    public function logout() {
-        setcookie(session_name(), '', time() - 42000);
-        session_destroy();
-    }
+}
+
+class Session {
+
+    const COOKIE_AUTH_TOKEN = 'key';
+    const SESSION_AUTH_TOKEN = 'key';
+    const SESSION_AUTH_DATA_OBJECT = 'key';
 
     public function login($username, $password) {
         session_start();
@@ -128,37 +144,29 @@ class Auth {
         if (!$user->verifyPassword($password)) {
             return false;
         }
-        $_SESSION['user'] = $user;
+        $_SESSION[self::SESSION_AUTH_DATA_OBJECT] = $user;
         $authKey = $this->authKey();
-        $_SESSION['key'] = $authKey;
+        $_SESSION[self::SESSION_AUTH_TOKEN] = $authKey;
         setcookie('key', $authKey);
         return true;
     }
 
-    public function isLoggedIn() {
-        if (isset($_COOKIE['key']) && isset($_SESSION['key'])) {
-            return $_COOKIE['key'] === $_SESSION['key'];
+    public static function logout() {
+        setcookie(session_name(), '', time() - 42000);
+        setcookie(self::COOKIE_AUTH_TOKEN, '', time() - 42000);
+        session_destroy();
+    }
+
+    public static function isLoggedIn() {
+        session_start();
+        if (isset($_COOKIE[self::COOKIE_AUTH_TOKEN]) && isset($_SESSION[self::SESSION_AUTH_TOKEN])) {
+            return $_COOKIE[self::COOKIE_AUTH_TOKEN] === $_SESSION[self::SESSION_AUTH_TOKEN];
         }
         return false;
     }
 
-    private function getUser($username) {
-        $db = new Mysql();
-        $AUTH_TABLE = Auth::TABLE;
-        $AUTH_USER = Auth::USERNAME;
-        $sql = "SELECT * FROM $AUTH_TABLE WHERE $AUTH_USER  = ?";
-        $results = $db->preparedQuery($sql, 's', $username);
-        $db->close();
-        if (!isset($results[0])) {
-            return null;
-        }
-        $name = new Name($results[Auth::FIRSTNAME], $results[Auth::LASTNAME]);
-        $user = new User($name, $results[Auth::USERNAME], $results[Auth::PASSWORD], $results[Auth::ROLE]);
-        return $user;
-    }
-
-    private function authKey() {
-        return hash('sha256', $_SESSION["username"] . time() . random_int());
+    private static function authToken() {
+        return hash('sha256', $_SESSION[self::SESSION_AUTH_DATA_OBJECT]->getUsername() . time() . random_int());
     }
 
 }

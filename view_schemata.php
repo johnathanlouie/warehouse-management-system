@@ -9,7 +9,7 @@ include 'navbar.php';
 <h1>View Schemata</h1>
 
 <?php
-$db = new mysqlp();
+$db = new Mysql();
 
 $schemata = $db->query('SELECT * FROM sku_schemata');
 $db->close();
@@ -59,7 +59,7 @@ function get_format2($input)
 	return $string;
 }
 
-$db = new mysqlp();
+$db = new Mysql();
 $db->prepare('SELECT * FROM sku_fields WHERE schema_id = ? ORDER BY sku_field_pos ASC');
 foreach ($schemata as $i => $schema):
 $db->stmt->bind_param('i', $schema['schema_id']);

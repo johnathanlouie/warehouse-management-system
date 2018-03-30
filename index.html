@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Prometheus</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    </head>
+    <body style="background-image: url(generic_warehouse.jpg); background-size: cover;">
+
+        <div class="container">
+            <div class="jumbotron">
+                <h1>Prometheus</h1>
+                <p>Warehouse/Inventory Management System</p>
+
+            </div>
+
+            <div class="well"><p>Hello <? echo $_SESSION['username']; ?>!</p></div>
+            <a href="menu.php" class="btn btn-info btn-block" role="button">Menu</a>
+            <a href="logout.php" class="btn btn-info btn-block" role="button">Logout</a>
+
+            <a href="login.php" class="btn btn-info btn-block" role="button">Login</a>
+
+        </div>
+        
+        
+<form id="login-form" method="post" role="form">
+<div class="form-group">
+<label for="username">Username:</label>
+<input type="text" class="form-control" id="username" name="username" autofocus="autofocus" placeholder="Username" required="required" pattern="[a-z]+[0-9]*">
+</div>
+<div class="form-group">
+<label for="password">Password:</label>
+<input type="password" class="form-control" id="password" name="password" placeholder="password" required="required" pattern="[A-Za-z0-9]+">
+</div>
+<div class="checkbox">
+<label for="remember"><input type="checkbox" id="remember" name="remember">Remember me</label>
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>
+        
+        
+<a href="menu.php" class="btn btn-info btn-block" role="button">Menu</a>
+<a href="logout.php" class="btn btn-info btn-block" role="button">Logout</a>
+    </body>
+</html>
+

@@ -1,5 +1,5 @@
 <?php
-require 'phplibrary.php'
+require 'phplibrary.php';
 require 'session.php';
 require 'template_top.html';
 require 'database.php';

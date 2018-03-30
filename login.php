@@ -2,33 +2,26 @@
 
 namespace wms;
 
-require_once 'auth.php';
+require_once 'loginstatus.php';
 
-class LoginStatus {
+class LoginHandler {
 
-    const SUCCESS = 0;
-    const FAIL = 1;
+    private static function respond() {
+        $session = Session::getInstance();
+        if ($session->isLoggedIn()) {
+            return new LoginStatus('Already logged in.', LoginStatus::SUCCESS);
+        } elseif (!isset($_POST['username']) || !isset($_POST['password'])) {
+            return new LoginStatus('Missing login information.', LoginStatus::FAIL);
+        } elseif (!$session->login($_POST['username'], $_POST['password'])) {
+            return new LoginStatus('Wrong login information.', LoginStatus::FAIL);
+        }
+        return new LoginStatus('Successfully logged in.', LoginStatus::SUCCESS);
+    }
 
-    private $message;
-    private $code;
-
-    public function __construct($message, $code) {
-        $this->message = $message;
-        $this->code = $code;
+    public static function handle() {
+        echo json_encode(self::respond());
     }
 
 }
 
-function login() {
-    $auth = Auth::getInstance();
-    if ($auth->isLoggedIn()) {
-        return new LoginStatus('Already logged in.', LoginStatus::SUCCESS);
-    } elseif (!isset($_POST['username']) || !isset($_POST['password'])) {
-        return new LoginStatus('Missing login information.', LoginStatus::FAIL);
-    } elseif (!$auth->login($_POST['username'], $_POST['password'])) {
-        return new LoginStatus('Wrong login information.', LoginStatus::FAIL);
-    }
-    return new LoginStatus('Successfully logged in.', LoginStatus::SUCCESS);
-}
-
-echo json_encode(login());
+LoginHandler::handle();
